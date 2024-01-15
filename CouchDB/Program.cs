@@ -1,4 +1,5 @@
-﻿using CouchDB.Driver.DatabaseApiMethodOptions;
+﻿using CouchDB.Connection;
+using CouchDB.Driver.DatabaseApiMethodOptions;
 using CouchDB.Driver.Extensions;
 using CouchDB.Driver.Query.Extensions;
 using CouchDB.Model;
@@ -17,23 +18,27 @@ namespace CouchDB
 
             //await CreateData();
 
-            await ChangeData();
+            //await ChangeData();
             
-            var temp = await GetData();
+            //var temp = await GetData();
 
-            Console.WriteLine(temp.Count());
+            //Console.WriteLine(temp.Count());
 
-            foreach (var item in temp)
-            {
-                Console.WriteLine("-------------------------");
-                Console.WriteLine($"Tier:{item.Name}");
-                Console.WriteLine($"Type:{item.Type}");
-                Console.WriteLine($"Alter:{item.Alter}");
-                Console.WriteLine($"Essen:{item.Essen}");
+            //foreach (var item in temp)
+            //{
+            //    Console.WriteLine("-------------------------");
+            //    Console.WriteLine($"Tier:{item.Name}");
+            //    Console.WriteLine($"Type:{item.Type}");
+            //    Console.WriteLine($"Alter:{item.Alter}");
+            //    Console.WriteLine($"Essen:{item.Essen}");
 
-            }
+            //}
 
         }
+
+        // -- Id vom Dokument muss bekannt sein
+        // -- mit Find Async über die ID das Dokument erhalten
+        // -- Mit Remove Async entfernen
 
         private static async Task DeleteData()
         {
@@ -46,11 +51,31 @@ namespace CouchDB
             await context.Tiere.RemoveAsync(find);
         }
 
+        // -- Id vom Dokument muss bekannt sein
+        // -- mit Find Async über die ID das Dokument erhalten
+        // -- Mit Remove Async entfernen
+        // -- Datei erneut mit geänderten Werten einfügen
+
         private static async Task ChangeData()
         {
             await using var context = new UserContext();
 
             var id = "8bfd4d4ca6d6d11d24a7c4491501021d";
+            var find = await context.Tiere.FindAsync(id);
+
+            var gorilla = new Tiere { Id= id, Alter = 10, Essen = "Banane", Name = "Gorilla", Type = "Tier" };
+            
+            context.Tiere.RemoveAsync(find);
+
+            var gorilla2 = new Tiere { Id = id, Alter = 20, Essen = "Banane", Name = "Gorilla", Type = "Tier" };
+
+
+
+            Console.WriteLine(find.Name);
+
+            
+            await context.Tiere.AddOrUpdateAsync(gorilla2);
+
 
         }
 
